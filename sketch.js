@@ -3,11 +3,23 @@ var menuHeight
 var elementWidth;
 var running = false;
 
+var RED;
+var BLUE;
+var GREEN;
+var YELLOW;
+var WHITE;
+
 function setup() {
+    RED = color(255, 0, 0);
+    BLUE = color(0, 0, 255);
+    GREEN = color(0, 255, 0);
+    YELLOW = color(255, 255, 0);
+    WHITE = color(255, 255, 255);
+
     elementWidth = 3;
     menuHeight = 200;
 
-    var canvas = createCanvas(1200, 600 + menuHeight);
+    var canvas = createCanvas(1500, 600 + menuHeight);
     canvas.parent("sketch");
 
     resetSketch();
@@ -76,15 +88,19 @@ function runAlgorithmInsertionSort() {
 
 async function insertionSort(panel) {
     print('passou')
+    panel.elements[0].color = GREEN;
     for (let i = 0; i < panel.elements.length; i++) {
         print(i)
         let j = i;
+        panel.elements[j].color = RED;
         while ((j != 0) && panel.elements[j].rectHeight < panel.elements[j - 1].rectHeight) {
             await sleep(parseInt(speedSlider.value()));
+            panel.elements[j].color = GREEN;
             panel.swapElements(j, j - 1);
             panel.update();
             j -= 1;
         }
+        panel.elements[j].color = GREEN;
         // noLoop();
     }
     print('terminou')
