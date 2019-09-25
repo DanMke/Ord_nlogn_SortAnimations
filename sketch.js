@@ -16,20 +16,23 @@ function setup() {
     resetButton.position(300, 22, 25);
     resetButton.mousePressed(resetSketch);
 
+    speedSlider = createSlider(1, 1000, 5);
+    speedSlider.position(500, 22);
+
     insertionSortButton = createButton('Insertion Sort');
-    insertionSortButton.position(500, 22, 25);
+    insertionSortButton.position(800, 22, 25);
     insertionSortButton.mousePressed(runAlgorithmInsertionSort);
 
     mergeSortButton = createButton('Merge Sort');
-    mergeSortButton.position(600, 22, 25);
+    mergeSortButton.position(900, 22, 25);
     mergeSortButton.mousePressed(runAlgorithmMergeSort);
 
     bucketSortButton = createButton('Bucket Sort');
-    bucketSortButton.position(687, 22, 25);
+    bucketSortButton.position(987, 22, 25);
     // mergeSortButton.mousePressed(runAlgorithmMergeSort);
 
     quickSortButton = createButton('Quick Sort');
-    quickSortButton.position(777, 22, 25);
+    quickSortButton.position(1077, 22, 25);
     // mergeSortButton.mousePressed(runAlgorithmMergeSort);
 
 }
@@ -47,7 +50,7 @@ function draw() {
 }
 
 function sleep(ms) {
-    if (ms === 0 || isNaN(ms)){
+    if (ms === 0) {
         return;
     }
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -77,7 +80,7 @@ async function insertionSort(panel) {
         print(i)
         let j = i;
         while ((j != 0) && panel.elements[j].rectHeight < panel.elements[j - 1].rectHeight) {
-            await sleep(1);
+            await sleep(parseInt(speedSlider.value()));
             panel.swapElements(j, j - 1);
             panel.update();
             j -= 1;
