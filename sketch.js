@@ -53,7 +53,7 @@ function setup() {
 
     bucketSortButton = createButton('Bucket Sort');
     bucketSortButton.position(987, 22, 25);
-    // mergeSortButton.mousePressed(runAlgorithmMergeSort);
+    bucketSortButton.mousePressed(runAlgorithmBucketSort);
 
     quickSortButton = createButton('Quick Sort');
     quickSortButton.position(1077, 22, 25);
@@ -291,4 +291,77 @@ async function shellSort() {
         gap = parseInt(gap / 2);
     }
     running = false;
+}
+
+function runAlgorithmBucketSort() {
+  if (running) { 
+    print("Already running");
+    return;
+  }
+  running = true;
+  bucketSort();
+}
+
+async function bucketSort(){
+  
+  var min = 1000,      
+      bucket_count = 50,
+      buckets = Array(bucket_count);
+
+  for(let j = 0; j < panel.elements.length; j++){
+    if(panel.elements[j].rectHeight < min){
+      min = panel.elements[j].rectHeight;
+    };
+  }
+
+  for(let i = 0; i < panel.elements.length; i++){
+    let newIndex = Math.floor( (panel.elements[i].rectHeight - min) / bucket_count );    
+    buckets[newIndex] = buckets[newIndex] || [];
+    buckets[newIndex].push(panel.elements[i]);
+  }
+  var pos = 0;
+  for(let i = 0; i < buckets.length; i++){    
+    if(buckets[i]){
+      buckets[i][0].color = RED;
+      buckets[i][buckets[i].length - 1].color = BLUE;
+      
+      for(let j = 0; j < buckets[i].length; j++){        
+        panel.elements[pos++] = buckets[i][j];
+        await sleep(speedSlider.value());
+      }
+    }
+  }
+
+  pos = 0;
+  for(let i = 0; i < buckets.length; i++){
+    if(buckets[i]){  
+      await insertionSortToBucket(buckets[i]);
+      for(let j = 0; j < buckets[i].length; j++){        
+        panel.elements[pos].color = GREEN;        
+        panel.elements[pos++] = buckets[i][j];
+        await sleep(speedSlider.value());
+      }
+    }
+  }
+  running = false;
+}
+
+async function insertionSortToBucket(bucket){
+  for (let i = 0; i < bucket.length; i++) {
+    let j = i;
+    temp = bucket[j];
+    bucket[j].color = YELLOW;
+    while ((j > 0) && bucket[j].rectHeight < bucket[j - 1].rectHeight) {
+      let aux = bucket[j];
+      await sleep(speedSlider.value());
+      await panel.update();
+      bucket[j] = bucket[j - 1];
+      await sleep(speedSlider.value());
+      await panel.update();
+      bucket[j - 1] = aux;
+      await sleep(speedSlider.value());
+      j -= 1;
+    }
+    bucket[j].color = WHITE;
+  }
 }
