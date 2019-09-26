@@ -73,9 +73,118 @@ function runAlgorithmMergeSort() {
         print("Already running");
         return;
     }
-    //running = true;
-    //mergeSort(panel);
+    running = true;
+    mergeSort(panel.elements, 0, panel.elements.length - 1);
 }
+
+
+async function mergeSort(arr, left, right) {
+    if (left < right) {
+        await sleep(speedSlider.value());
+        arr[left].color = YELLOW;
+        await sleep(speedSlider.value());
+        arr[right].color = RED;
+        panel.update();
+        var mid = parseInt((left + (right - left) / 2));
+        await Promise.all([
+            mergeSort(arr, left, mid),
+            mergeSort(arr, mid + 1, right),
+            merge(arr, left, mid, right)
+        ]);
+    }
+}
+
+async function merge(arr, left, mid, right) {
+    var i, j, k;
+    var n1 = mid - left + 1;
+    var n2 = right - mid;
+
+    var L = [];
+    var R = [];
+
+    for (i = 0; i < n1; i++) {
+        L.push(arr[left + i]);
+    }
+    for (j = 0; j < n2; j++) {
+        R.push(arr[mid + 1 + j]);
+    }
+    
+    i = 0;
+    j = 0;
+    k = left ;
+    
+    while (i < n1 && j < n2) {
+        if (L[i].rectHeight <= R[j].rectHeight) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// async function mergeSort(arr) {
+//     print ('comecou');
+//     if (arr.length < 2) {
+//         return arr;
+//     }
+//     var midPoint = parseInt(arr.length / 2);
+//     var left = arr.slice(0, midPoint);
+//     left[0].color = YELLOW;
+//     left[midPoint - 1].color = YELLOW;
+//     await sleep(speedSlider.value());
+//     panel.update();
+
+//     var right = arr.slice(midPoint, arr.length);
+//     right[0].color = RED;
+//     right[midPoint - 1].color = RED;
+//     await sleep(speedSlider.value());
+//     panel.update();
+    
+//     await Promise.all([
+//         mergeSort(left),
+//         mergeSort(right)
+//     ]);
+    
+//     let i = 0, j = 0, k = 0;
+//     while (i < left.length && j < right.length) {
+//         if (left[i].rectHeight < right[j].rectHeight) {
+            
+//             arr[k] = left[i];
+//             i += 1;
+//         } else {
+//             arr[k] = right[j];
+//             j += 1;
+//         }
+//         k += 1;
+//     }
+//     while (i < left.length) {
+//         arr[k] = left[i];
+//         i += 1;
+//         k += 1;
+//     }
+//     while (j < right.length) {
+//         arr[k] = right[j];
+//         j += 1;
+//         k += 1;
+//     }
+//     print('terminou');
+//     running = false;
+// }
 
 function runAlgorithmInsertionSort() {
     if (running) { 
@@ -83,10 +192,10 @@ function runAlgorithmInsertionSort() {
         return;
     }
     running = true;
-    insertionSort(panel);
+    insertionSort();
 }
 
-async function insertionSort(panel) {
+async function insertionSort() {
     print('passou')
     panel.elements[0].color = GREEN;
     for (let i = 0; i < panel.elements.length; i++) {
@@ -94,8 +203,7 @@ async function insertionSort(panel) {
         let j = i;
         panel.elements[j].color = RED;
         while ((j != 0) && panel.elements[j].rectHeight < panel.elements[j - 1].rectHeight) {
-            await sleep(parseInt(speedSlider.value()));
-            panel.elements[j].color = GREEN;
+            await sleep(speedSlider.value());
             panel.swapElements(j, j - 1);
             panel.update();
             j -= 1;
@@ -103,8 +211,8 @@ async function insertionSort(panel) {
         panel.elements[j].color = GREEN;
         // noLoop();
     }
-    print('terminou')
     running = false;
+    print('terminou')
 }
 
 

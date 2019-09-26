@@ -42,6 +42,12 @@ class Panel {
         this.elements[indexA] = aux;
     }
 
+    updateHeights(heights) {
+        for (let i = 0; i < this.numberElements; i++) {
+            this.elements[i] = heights[i];
+        }
+    }
+
     updatePosX () {
         let posX = 0;
         for (let element of this.elements) {
