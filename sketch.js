@@ -16,7 +16,7 @@ function setup() {
     YELLOW = color(255, 255, 0);
     WHITE = color(255, 255, 255);
 
-    elementWidth = 3;
+    elementWidth = 6;
     menuHeight = 200;
 
     var canvas = createCanvas(1500, 600 + menuHeight);
@@ -25,11 +25,19 @@ function setup() {
     resetSketch();
     
     resetButton = createButton('Reset');
-    resetButton.position(300, 22, 25);
+    resetButton.position(220, 25, 25);
     resetButton.mousePressed(resetSketch);
 
     speedSlider = createSlider(1, 1000, 5);
-    speedSlider.position(500, 22);
+    speedSlider.position(300, 22);
+
+    bubbleSortButton = createButton('Bubble Sort');
+    bubbleSortButton.position(600, 22, 25);
+    bubbleSortButton.mousePressed(runAlgorithmBubbleSort);
+
+    selectionSortButton = createButton('Selection Sort');
+    selectionSortButton.position(695, 22, 25);
+    selectionSortButton.mousePressed(runAlgorithmSelectionSort);
 
     insertionSortButton = createButton('Insertion Sort');
     insertionSortButton.position(800, 22, 25);
@@ -112,24 +120,24 @@ async function merge(arr, left, mid, right) {
         } else {
             arr[k] = R[j], j++;
         }
-        if (last) {
-            arr[k].color = GREEN;
-        }
         k++;
     }
     await sleep(speedSlider.value());
     while (i < n1) {
-        if (last) {
-            arr[k].color = GREEN;
-        }
         arr[k] = L[i], i++, k++;
     }
     await sleep(speedSlider.value());
     while (j < n2) {
-        if (last) {
-            arr[k].color = GREEN;
-        }
         arr[k] = R[j], j++, k++;
+    }
+    if (last) {
+        for (let i = 0; i < arr.length; i++) {
+            await sleep(speedSlider.value() / 100);
+            arr[i].color = GREEN;
+        }
+        print(arr.length)
+        print(panel.numberElements)
+        print(panel.elements.length)
     }
     await sleep(speedSlider.value());
     panel.update();
@@ -137,7 +145,6 @@ async function merge(arr, left, mid, right) {
         running = false;
     }
 }
-
 
 function runAlgorithmInsertionSort() {
     if (running) { 
@@ -168,18 +175,41 @@ async function insertionSort() {
     print('terminou')
 }
 
+function runAlgorithmSelectionSort() {
+    if (running) { 
+        print("Already running");
+        return;
+    }
+    running = true;
+    selectionSort();
+}
 
-// async function delayES8(time) {
-//     await delay(time);
-//     return;
-// }
+async function selectionSort() {
+    print('passou')
+    for (let i = 0; i < panel.elements.length; i++) {
+        await sleep(speedSlider.value() / 100);
+        min_index = i;
+        panel.elements[min_index].color = RED;
+        for (let j = i + 1; j < panel.elements.length; j++) {
+            await sleep(speedSlider.value() / 100);
+            if (j > 0 && panel.elements[j - 1].color == BLUE) {
+                panel.elements[j - 1].color = WHITE;
+            }
+            panel.elements[j].color = BLUE;
+            if (panel.elements[j].rectHeight < panel.elements[min_index].rectHeight) {
+                panel.elements[min_index].color = WHITE;
+                panel.elements[j].color = RED;
+                min_index = j;
+            }
+        }
+        panel.swapElements(i, min_index);
 
-// function delay(time) {
-//     return new Promise((resolve, reject) => {
-//         if (isNaN(time)) {
-//             reject(new Error('delay requires a valid number'));
-//         } else {
-//             setTimeout(resolve, time);
-//         }
-//     });
-// }
+        if (panel.elements[panel.elements.length - 1].color == BLUE) {
+            panel.elements[panel.elements.length - 1].color = WHITE;
+        }
+        panel.elements[i].color = GREEN;
+    }
+    running = false;
+    print('terminou')
+}
+

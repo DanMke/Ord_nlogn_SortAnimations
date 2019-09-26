@@ -17,7 +17,7 @@ class Panel {
     createRandomUniqueHeights () {
         var randomUniqueHeights = []
         while(randomUniqueHeights.length < this.numberElements){
-            let h = Math.floor(Math.random() * (height - menuHeight)) + 1;
+            let h = Math.floor(Math.random() * (height - menuHeight)) + 5;
             if(randomUniqueHeights.indexOf(h) == -1) { 
                 randomUniqueHeights.push(h);
             }
