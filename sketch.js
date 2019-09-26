@@ -213,3 +213,31 @@ async function selectionSort() {
     print('terminou')
 }
 
+function runAlgorithmBubbleSort() {
+    if (running) { 
+        print("Already running");
+        return;
+    }
+    running = true;
+    bubbleSort();
+}
+
+async function bubbleSort() {
+    print('passou')
+    for (let i = 0; i < panel.elements.length; i++) {
+        await sleep(speedSlider.value());
+        for (let j = 0; j < panel.elements.length - i - 1; j++) {
+            await sleep(speedSlider.value());
+            panel.elements[j].color = RED;
+            if (panel.elements[j].rectHeight > panel.elements[j + 1].rectHeight) {
+                panel.swapElements(j, j + 1);
+            } else {
+                panel.elements[j].color = WHITE;
+                panel.elements[j + 1].color = RED;
+            }
+        }
+        panel.elements[panel.elements.length - i - 1].color = GREEN;
+    }
+    running = false;
+    print('terminou')
+}
