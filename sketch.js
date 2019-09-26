@@ -353,11 +353,7 @@ async function insertionSortToBucket(bucket){
     bucket[j].color = YELLOW;
     while ((j > 0) && bucket[j].rectHeight < bucket[j - 1].rectHeight) {
       let aux = bucket[j];
-      await sleep(speedSlider.value());
-      await panel.update();
       bucket[j] = bucket[j - 1];
-      await sleep(speedSlider.value());
-      await panel.update();
       bucket[j - 1] = aux;
       await sleep(speedSlider.value());
       j -= 1;
@@ -365,3 +361,35 @@ async function insertionSortToBucket(bucket){
     bucket[j].color = WHITE;
   }
 }
+
+// pos = 0;
+// for(let i = 0; i < buckets.length; i++){
+//   if(buckets[i]){  
+//     insertionSortToBucket(buckets[i], pos);
+//     pos += buckets[i].length;
+//     // for(let j = 0; j < buckets[i].length; j++){        
+//     //   panel.elements[pos].color = GREEN;        
+//     //   panel.elements[pos++] = buckets[i][j];
+//     //   await sleep(speedSlider.value());
+//     // }
+//   }
+// }
+// running = false;
+// }
+
+// async function insertionSortToBucket(bucket, pos){
+// for (let i = 0; i < bucket.length; i++) {
+//   print("t");
+//   let j = i;
+//   bucket[i].color = YELLOW;
+//   while ((j > 0) && bucket[j].rectHeight < bucket[j - 1].rectHeight) {
+//     print("o");
+//     aux = panel.elements[pos + j];
+//     panel.elements[pos + j] = panel.elements[pos + j - 1];
+//     panel.elements[pos + j - 1] = aux;
+//     await sleep(speedSlider.value());
+//     j--;
+//   }
+//   bucket[i].color = WHITE;
+// }
+// }
