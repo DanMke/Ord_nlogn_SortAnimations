@@ -31,6 +31,10 @@ function setup() {
     speedSlider = createSlider(1, 1000, 5);
     speedSlider.position(300, 22);
 
+    shellSortButton = createButton('Shell Sort');
+    shellSortButton.position(520, 22, 25);
+    shellSortButton.mousePressed(runAlgorithmShellSort);
+
     bubbleSortButton = createButton('Bubble Sort');
     bubbleSortButton.position(600, 22, 25);
     bubbleSortButton.mousePressed(runAlgorithmBubbleSort);
@@ -156,7 +160,6 @@ function runAlgorithmInsertionSort() {
 }
 
 async function insertionSort() {
-    print('passou')
     panel.elements[0].color = GREEN;
     for (let i = 0; i < panel.elements.length; i++) {
         print(i)
@@ -169,10 +172,8 @@ async function insertionSort() {
             j -= 1;
         }
         panel.elements[j].color = GREEN;
-        // noLoop();
     }
     running = false;
-    print('terminou')
 }
 
 function runAlgorithmSelectionSort() {
@@ -185,7 +186,6 @@ function runAlgorithmSelectionSort() {
 }
 
 async function selectionSort() {
-    print('passou')
     for (let i = 0; i < panel.elements.length; i++) {
         await sleep(speedSlider.value() / 100);
         min_index = i;
@@ -210,7 +210,6 @@ async function selectionSort() {
         panel.elements[i].color = GREEN;
     }
     running = false;
-    print('terminou')
 }
 
 function runAlgorithmBubbleSort() {
@@ -223,7 +222,6 @@ function runAlgorithmBubbleSort() {
 }
 
 async function bubbleSort() {
-    print('passou')
     for (let i = 0; i < panel.elements.length; i++) {
         await sleep(speedSlider.value());
         for (let j = 0; j < panel.elements.length - i - 1; j++) {
@@ -239,5 +237,58 @@ async function bubbleSort() {
         panel.elements[panel.elements.length - i - 1].color = GREEN;
     }
     running = false;
-    print('terminou')
+}
+
+function runAlgorithmShellSort() {
+    if (running) { 
+        print("Already running");
+        return;
+    }
+    running = true;
+    shellSort();
+}
+
+async function shellSort() {
+    var last = false;
+    var gap = parseInt(panel.elements.length / 2);
+    var z;
+    while (gap > 0) {
+        await sleep(speedSlider.value());
+        if (gap === 1) {
+            last = true;
+        }
+        for (let i = gap; i < panel.elements.length; i++) {
+            var temp = panel.elements[i];
+            panel.elements[i].color = RED;
+            panel.elements[i - gap].color = BLUE;
+            await sleep(speedSlider.value());
+            var j = i;
+            while (j >= gap && panel.elements[j - gap].rectHeight > temp.rectHeight) {
+                panel.elements[j - gap].color = BLUE;
+                await sleep(speedSlider.value());
+                panel.elements[j] = panel.elements[j - gap];
+                j -= gap;
+            }
+            panel.elements[j] = temp;
+            if (!last) {
+                panel.elements[j].color = WHITE;
+                panel.elements[i - gap].color = WHITE;
+                z = i;
+                while (z >= gap) {
+                    panel.elements[z].color = WHITE;
+                    z -= gap;
+                }
+            } else {
+                panel.elements[j].color = GREEN;
+                panel.elements[i - gap].color = GREEN;
+                z = i;
+                while (z >= gap) {
+                    panel.elements[z].color = GREEN;
+                    z -= gap;
+                }
+            }
+        }
+        gap = parseInt(gap / 2);
+    }
+    running = false;
 }
