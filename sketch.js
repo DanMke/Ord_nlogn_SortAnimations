@@ -315,17 +315,16 @@ async function bucketSort(){
   }
 
   for(let i = 0; i < panel.elements.length; i++){
-    let newIndex = Math.floor( (panel.elements[i].rectHeight - min) / bucket_count );    
+    let newIndex = Math.floor( (panel.elements[i].rectHeight - min) / bucket_count );
     buckets[newIndex] = buckets[newIndex] || [];
     buckets[newIndex].push(panel.elements[i]);
   }
   var pos = 0;
-  for(let i = 0; i < buckets.length; i++){    
+  for(let i = 0; i < buckets.length; i++){
     if(buckets[i]){
       buckets[i][0].color = RED;
-      buckets[i][buckets[i].length - 1].color = BLUE;
-      
-      for(let j = 0; j < buckets[i].length; j++){        
+
+      for(let j = 0; j < buckets[i].length; j++){
         panel.elements[pos++] = buckets[i][j];
         await sleep(speedSlider.value());
       }
