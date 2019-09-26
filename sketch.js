@@ -80,17 +80,18 @@ function runAlgorithmMergeSort() {
 
 async function mergeSort(arr, left, right) {
     if (left < right) {
-        await sleep(speedSlider.value());
         arr[left].color = YELLOW;
-        await sleep(speedSlider.value());
         arr[right].color = RED;
+        await sleep(speedSlider.value());
         panel.update();
+        arr[left].color = WHITE;
+        arr[right].color = WHITE;
         var mid = parseInt((left + (right - left) / 2));
         await Promise.all([
             mergeSort(arr, left, mid),
             mergeSort(arr, mid + 1, right),
-            merge(arr, left, mid, right)
         ]);
+        await merge(arr, left, mid, right);
     }
 }
 
@@ -121,20 +122,27 @@ async function merge(arr, left, mid, right) {
             arr[k] = R[j];
             j++;
         }
+        await sleep(speedSlider.value());
+        //arr[k].color = GREEN;
         k++;
     }
 
     while (i < n1) {
         arr[k] = L[i];
+        //arr[k].color = GREEN;
+        await sleep(speedSlider.value());
         i++;
         k++;
     }
 
     while (j < n2) {
         arr[k] = R[j];
+        //arr[k].color = GREEN;
+        await sleep(speedSlider.value());
         j++;
         k++;
     }
+    running = false;
 }
 
 // async function mergeSort(arr) {
