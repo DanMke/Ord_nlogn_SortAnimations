@@ -23,7 +23,7 @@ function setup() {
     canvas.parent("sketch");
 
     resetSketch();
-    
+
     resetButton = createButton('Reset');
     resetButton.position(220, 25, 25);
     resetButton.mousePressed(resetSketch);
@@ -81,7 +81,7 @@ function sleep(ms) {
 }
 
 function runAlgorithmMergeSort() {
-    if (running) { 
+    if (running) {
         print("Already running");
         return;
     }
@@ -128,11 +128,11 @@ async function merge(arr, left, mid, right) {
     }
     await sleep(speedSlider.value());
     while (i < n1) {
-        arr[k] = L[i], i++, k++;
+        arr[k] = L[i], i++ , k++;
     }
     await sleep(speedSlider.value());
     while (j < n2) {
-        arr[k] = R[j], j++, k++;
+        arr[k] = R[j], j++ , k++;
     }
     if (last) {
         for (let i = 0; i < arr.length; i++) {
@@ -144,14 +144,13 @@ async function merge(arr, left, mid, right) {
         print(panel.elements.length)
     }
     await sleep(speedSlider.value());
-    panel.update();
     if (last) {
         running = false;
     }
 }
 
 function runAlgorithmInsertionSort() {
-    if (running) { 
+    if (running) {
         print("Already running");
         return;
     }
@@ -162,13 +161,11 @@ function runAlgorithmInsertionSort() {
 async function insertionSort() {
     panel.elements[0].color = GREEN;
     for (let i = 0; i < panel.elements.length; i++) {
-        print(i)
         let j = i;
         panel.elements[j].color = RED;
         while ((j != 0) && panel.elements[j].rectHeight < panel.elements[j - 1].rectHeight) {
             await sleep(speedSlider.value());
             panel.swapElements(j, j - 1);
-            panel.update();
             j -= 1;
         }
         panel.elements[j].color = GREEN;
@@ -177,7 +174,7 @@ async function insertionSort() {
 }
 
 function runAlgorithmSelectionSort() {
-    if (running) { 
+    if (running) {
         print("Already running");
         return;
     }
@@ -213,7 +210,7 @@ async function selectionSort() {
 }
 
 function runAlgorithmBubbleSort() {
-    if (running) { 
+    if (running) {
         print("Already running");
         return;
     }
@@ -240,7 +237,7 @@ async function bubbleSort() {
 }
 
 function runAlgorithmShellSort() {
-    if (running) { 
+    if (running) {
         print("Already running");
         return;
     }
@@ -294,101 +291,78 @@ async function shellSort() {
 }
 
 function runAlgorithmBucketSort() {
-  if (running) { 
-    print("Already running");
-    return;
-  }
-  running = true;
-  bucketSort();
+    if (running) {
+        print("Already running");
+        return;
+    }
+    running = true;
+    bucketSort();
 }
 
-async function bucketSort(){
-  
-  var min = 1000,      
-      bucket_count = 50,
-      buckets = Array(bucket_count);
+async function createBuckets(buckets, min, bucket_count) {
+    for (let i = 0; i < panel.elements.length; i++) {
+        let newIndex = Math.floor((panel.elements[i].rectHeight - min) / bucket_count);
+        buckets[newIndex] = buckets[newIndex] || [];
+        buckets[newIndex].push(panel.elements[i]);
+    }
+}
 
-  for(let j = 0; j < panel.elements.length; j++){
-    if(panel.elements[j].rectHeight < min){
-      min = panel.elements[j].rectHeight;
-    };
-  }
+async function bucketSort() {
+    var min = 1000,
+    bucket_count = parseInt(panel.numberElements / 20),
+    buckets = Array(bucket_count);
+    
+    for (let j = 0; j < panel.elements.length; j++) {
+        if (panel.elements[j].rectHeight < min) {
+            min = panel.elements[j].rectHeight;
+        };
+    }
+    
+    await createBuckets(buckets, min, bucket_count);
+    
+    var pos = 0;
+    for (let i = 0; i < buckets.length; i++) {
+        if (buckets[i]) {
+            for (let j = 0; j < buckets[i].length; j++) {
+                panel.elements[pos++] = buckets[i][j];
+                if (pos < panel.numberElements) {
+                    panel.elements[pos].color = YELLOW;
+                    await sleep(speedSlider.value());
+                    panel.elements[pos].color = WHITE;
+                }
+            }
+        }
+    }
+    
+    pos = 0;
+    for (let i = 0; i < buckets.length; i++) {
+        if (buckets[i]) {
+            buckets[i][0].color = BLUE;
+            await sleep(speedSlider.value());
+        }
+    }
 
-  for(let i = 0; i < panel.elements.length; i++){
-    let newIndex = Math.floor( (panel.elements[i].rectHeight - min) / bucket_count );
-    buckets[newIndex] = buckets[newIndex] || [];
-    buckets[newIndex].push(panel.elements[i]);
-  }
-  var pos = 0;
-  for(let i = 0; i < buckets.length; i++){
-    if(buckets[i]){
-      buckets[i][0].color = RED;
+    pos = 0;
+    for (let i = 0; i < buckets.length; i++) {
+        if (buckets[i]) {
+            insertionSortToBucket(buckets[i], pos);
+            pos += buckets[i].length;
+        }
+    }
+    running = false;
+}
 
-      for(let j = 0; j < buckets[i].length; j++){
-        panel.elements[pos++] = buckets[i][j];
+async function insertionSortToBucket(bucket, pos) {
+    panel.elements[pos].color = GREEN;
+    for (let i = 1; i < bucket.length; i++) {
         await sleep(speedSlider.value());
-      }
+        let j = i;
+        panel.elements[pos + j].color = RED;
+        while ((j != 0) && panel.elements[pos + j].rectHeight < panel.elements[pos + j - 1].rectHeight) {
+            panel.swapElements(pos + j, pos + j - 1);
+            await sleep(speedSlider.value());
+            j -= 1;
+        }
+        panel.elements[pos + j].color = GREEN;
     }
-  }
-
-  pos = 0;
-  for(let i = 0; i < buckets.length; i++){
-    if(buckets[i]){  
-      await insertionSortToBucket(buckets[i]);
-      for(let j = 0; j < buckets[i].length; j++){        
-        panel.elements[pos].color = GREEN;        
-        panel.elements[pos++] = buckets[i][j];
-        await sleep(speedSlider.value());
-      }
-    }
-  }
-  running = false;
 }
-
-async function insertionSortToBucket(bucket){
-  for (let i = 0; i < bucket.length; i++) {
-    let j = i;
-    temp = bucket[j];
-    bucket[j].color = YELLOW;
-    while ((j > 0) && bucket[j].rectHeight < bucket[j - 1].rectHeight) {
-      let aux = bucket[j];
-      bucket[j] = bucket[j - 1];
-      bucket[j - 1] = aux;
-      await sleep(speedSlider.value());
-      j -= 1;
-    }
-    bucket[j].color = WHITE;
-  }
-}
-
-// pos = 0;
-// for(let i = 0; i < buckets.length; i++){
-//   if(buckets[i]){  
-//     insertionSortToBucket(buckets[i], pos);
-//     pos += buckets[i].length;
-//     // for(let j = 0; j < buckets[i].length; j++){        
-//     //   panel.elements[pos].color = GREEN;        
-//     //   panel.elements[pos++] = buckets[i][j];
-//     //   await sleep(speedSlider.value());
-//     // }
-//   }
-// }
-// running = false;
-// }
-
-// async function insertionSortToBucket(bucket, pos){
-// for (let i = 0; i < bucket.length; i++) {
-//   print("t");
-//   let j = i;
-//   bucket[i].color = YELLOW;
-//   while ((j > 0) && bucket[j].rectHeight < bucket[j - 1].rectHeight) {
-//     print("o");
-//     aux = panel.elements[pos + j];
-//     panel.elements[pos + j] = panel.elements[pos + j - 1];
-//     panel.elements[pos + j - 1] = aux;
-//     await sleep(speedSlider.value());
-//     j--;
-//   }
-//   bucket[i].color = WHITE;
-// }
-// }
