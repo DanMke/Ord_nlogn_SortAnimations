@@ -380,7 +380,7 @@ async function quickSort(arr, start, end) {
         return;
     }
     let index = await partition(arr, start, end);
-    // arr[index].color = WHITE;
+    arr[index].color = WHITE;
     
     await Promise.all([
         quickSort(arr, start, index - 1),
@@ -394,26 +394,35 @@ async function partition(arr, start, end) {
     }
     let pivotValue = arr[end];
     let pivotIndex = start;
-
-    arr[pivotIndex].color = RED;
-    
+    pivotValue.color = BLUE;
+    arr[pivotIndex].color = RED; 
+    arr[start].color = RED;    
     for (let i = start; i < end; i++) {
-        if (arr[i].rectHeight < pivotValue.rectHeight) {
+        arr[i].color = RED;
+        await sleep(speedSlider.value());  
+        if (arr[i].rectHeight < pivotValue.rectHeight) {         
+            
+            arr[pivotIndex].color = YELLOW;
+            arr[i].color = GREEN;
             await sleep(speedSlider.value());
+            arr[i].color = YELLOW;            
             await panel.swapElements(i, pivotIndex);
-            arr[pivotIndex].color = WHITE;
             pivotIndex++;
             arr[pivotIndex].color = RED;
         }
+        arr[i].color = YELLOW;
     }
+    arr[pivotIndex].color = WHITE;
+    arr[end - 1].color = WHITE;
     await sleep(speedSlider.value());
     await panel.swapElements(pivotIndex, end);
-    // arr[pivotIndex].color = WHITE;
     
     for (let i = start; i < end; i++) {
         if (i != pivotIndex) {
             arr[i].color = WHITE;
         }
     }
+
+    arr[pivotIndex].color = WHITE; 
     return pivotIndex;
 }
