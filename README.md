@@ -25,7 +25,7 @@ Os algorítimos que podem ser visualizados são:
 ### Dependências do projeto
 Não há dependências
 ### Como executar o projeto
-Para executar o programa, basta entrar no link edaii.github.io/Ord_nlogn_SortAnimations/, gerado com o mesmo código disponível nesse repositório.
+Para executar o programa, basta entrar nesse [link](https://edaii.github.io/Ord_nlogn_SortAnimations/), gerado com o mesmo código disponível nesse repositório.
 ## Capturas de tela
 
 [![imagem 1](img/img1.png)](img/img1.png)
