@@ -57,7 +57,7 @@ function setup() {
 
     quickSortButton = createButton('Quick Sort');
     quickSortButton.position(1077, 22, 25);
-    // mergeSortButton.mousePressed(runAlgorithmMergeSort);
+    quickSortButton.mousePressed(runAlgorithmQuickSort);
 
 }
 
@@ -97,11 +97,14 @@ async function mergeSort(arr, left, right) {
         arr[left].color = WHITE;
         arr[right].color = WHITE;
         var mid = parseInt((left + (right - left) / 2));
-
-        await mergeSort(arr, left, mid);
-        await mergeSort(arr, mid + 1, right);
-        await sleep(speedSlider.value());
+        await Promise.all([
+            mergeSort(arr, left, mid),
+            mergeSort(arr, mid + 1, right)
+        ]);
+        // await mergeSort(arr, left, mid);
+        // await mergeSort(arr, mid + 1, right);
         await merge(arr, left, mid, right);
+        await sleep(speedSlider.value());
     }
 }
 
@@ -136,12 +139,9 @@ async function merge(arr, left, mid, right) {
     }
     if (last) {
         for (let i = 0; i < arr.length; i++) {
-            await sleep(speedSlider.value() / 100);
             arr[i].color = GREEN;
+            await sleep(speedSlider.value() / 100);
         }
-        print(arr.length)
-        print(panel.numberElements)
-        print(panel.elements.length)
     }
     await sleep(speedSlider.value());
     if (last) {
@@ -165,7 +165,7 @@ async function insertionSort() {
         panel.elements[j].color = RED;
         while ((j != 0) && panel.elements[j].rectHeight < panel.elements[j - 1].rectHeight) {
             await sleep(speedSlider.value());
-            panel.swapElements(j, j - 1);
+            await panel.swapElements(j, j - 1);
             j -= 1;
         }
         panel.elements[j].color = GREEN;
@@ -199,7 +199,7 @@ async function selectionSort() {
                 min_index = j;
             }
         }
-        panel.swapElements(i, min_index);
+        await panel.swapElements(i, min_index);
 
         if (panel.elements[panel.elements.length - 1].color == BLUE) {
             panel.elements[panel.elements.length - 1].color = WHITE;
@@ -225,7 +225,7 @@ async function bubbleSort() {
             await sleep(speedSlider.value());
             panel.elements[j].color = RED;
             if (panel.elements[j].rectHeight > panel.elements[j + 1].rectHeight) {
-                panel.swapElements(j, j + 1);
+                await panel.swapElements(j, j + 1);
             } else {
                 panel.elements[j].color = WHITE;
                 panel.elements[j + 1].color = RED;
@@ -299,9 +299,9 @@ function runAlgorithmBucketSort() {
     bucketSort();
 }
 
-async function createBuckets(buckets, min, bucket_count) {
+async function createBuckets(buckets, min, bucketCount) {
     for (let i = 0; i < panel.elements.length; i++) {
-        let newIndex = Math.floor((panel.elements[i].rectHeight - min) / bucket_count);
+        let newIndex = Math.floor((panel.elements[i].rectHeight - min) / bucketCount);
         buckets[newIndex] = buckets[newIndex] || [];
         buckets[newIndex].push(panel.elements[i]);
     }
@@ -309,8 +309,8 @@ async function createBuckets(buckets, min, bucket_count) {
 
 async function bucketSort() {
     var min = 1000,
-    bucket_count = parseInt(panel.numberElements / 20),
-    buckets = Array(bucket_count);
+    bucketCount = parseInt(panel.numberElements / 20),
+    buckets = Array(bucketCount);
     
     for (let j = 0; j < panel.elements.length; j++) {
         if (panel.elements[j].rectHeight < min) {
@@ -318,7 +318,7 @@ async function bucketSort() {
         };
     }
     
-    await createBuckets(buckets, min, bucket_count);
+    await createBuckets(buckets, min, bucketCount);
     
     var pos = 0;
     for (let i = 0; i < buckets.length; i++) {
@@ -334,7 +334,6 @@ async function bucketSort() {
         }
     }
     
-    pos = 0;
     for (let i = 0; i < buckets.length; i++) {
         if (buckets[i]) {
             buckets[i][0].color = BLUE;
@@ -359,10 +358,62 @@ async function insertionSortToBucket(bucket, pos) {
         let j = i;
         panel.elements[pos + j].color = RED;
         while ((j != 0) && panel.elements[pos + j].rectHeight < panel.elements[pos + j - 1].rectHeight) {
-            panel.swapElements(pos + j, pos + j - 1);
+            await panel.swapElements(pos + j, pos + j - 1);
             await sleep(speedSlider.value());
             j -= 1;
         }
         panel.elements[pos + j].color = GREEN;
     }
+}
+
+function runAlgorithmQuickSort() {
+    if (running) {
+        print("Already running");
+        return;
+    }
+    running = true;
+    quickSort(panel.elements, 0, panel.elements.length - 1);
+}
+
+async function quickSort(arr, start, end) {
+    if (start >= end) {
+        return;
+    }
+    let index = await partition(arr, start, end);
+    // arr[index].color = WHITE;
+    
+    await Promise.all([
+        quickSort(arr, start, index - 1),
+        quickSort(arr, index + 1, end)
+    ]);
+}
+
+async function partition(arr, start, end) {
+    for (let i = start; i < end; i++) {
+        arr[i].color = YELLOW;
+    }
+    let pivotValue = arr[end];
+    let pivotIndex = start;
+
+    arr[pivotIndex].color = RED;
+    
+    for (let i = start; i < end; i++) {
+        if (arr[i].rectHeight < pivotValue.rectHeight) {
+            await sleep(speedSlider.value());
+            await panel.swapElements(i, pivotIndex);
+            arr[pivotIndex].color = WHITE;
+            pivotIndex++;
+            arr[pivotIndex].color = RED;
+        }
+    }
+    await sleep(speedSlider.value());
+    await panel.swapElements(pivotIndex, end);
+    // arr[pivotIndex].color = WHITE;
+    
+    for (let i = start; i < end; i++) {
+        if (i != pivotIndex) {
+            arr[i].color = WHITE;
+        }
+    }
+    return pivotIndex;
 }
