@@ -366,13 +366,14 @@ async function insertionSortToBucket(bucket, pos) {
     }
 }
 
-function runAlgorithmQuickSort() {
+async function runAlgorithmQuickSort() {
     if (running) {
         print("Already running");
         return;
     }
     running = true;
-    quickSort(panel.elements, 0, panel.elements.length - 1);
+    await quickSort(panel.elements, 0, panel.elements.length - 1);
+    running = false;
 }
 
 async function quickSort(arr, start, end) {
