@@ -28,7 +28,7 @@ function setup() {
     resetButton.position(220, 25, 25);
     resetButton.mousePressed(resetSketch);
 
-    speedSlider = createSlider(1, 1000, 5);
+    speedSlider = createSlider(0, 1000, 5);
     speedSlider.position(300, 22);
 
     shellSortButton = createButton('Shell Sort');
@@ -59,6 +59,9 @@ function setup() {
     quickSortButton.position(1077, 22, 25);
     quickSortButton.mousePressed(runAlgorithmQuickSort);
 
+    countingSortButton = createButton('Counting Sort');
+    countingSortButton.position(1160, 22, 25);
+    countingSortButton.mousePressed(runAlgorithmCountingSort);
 }
 
 function resetSketch() {
@@ -309,17 +312,17 @@ async function createBuckets(buckets, min, bucketCount) {
 
 async function bucketSort() {
     var min = 1000,
-    bucketCount = parseInt(panel.numberElements / 20),
-    buckets = Array(bucketCount);
-    
+        bucketCount = parseInt(panel.numberElements / 20),
+        buckets = Array(bucketCount);
+
     for (let j = 0; j < panel.elements.length; j++) {
         if (panel.elements[j].rectHeight < min) {
             min = panel.elements[j].rectHeight;
         };
     }
-    
+
     await createBuckets(buckets, min, bucketCount);
-    
+
     var pos = 0;
     for (let i = 0; i < buckets.length; i++) {
         if (buckets[i]) {
@@ -333,7 +336,7 @@ async function bucketSort() {
             }
         }
     }
-    
+
     for (let i = 0; i < buckets.length; i++) {
         if (buckets[i]) {
             buckets[i][0].color = BLUE;
@@ -382,7 +385,7 @@ async function quickSort(arr, start, end) {
     }
     let index = await partition(arr, start, end);
     arr[index].color = WHITE;
-    
+
     await Promise.all([
         quickSort(arr, start, index - 1),
         quickSort(arr, index + 1, end)
@@ -396,17 +399,17 @@ async function partition(arr, start, end) {
     let pivotValue = arr[end];
     let pivotIndex = start;
     pivotValue.color = BLUE;
-    arr[pivotIndex].color = RED; 
-    arr[start].color = RED;    
+    arr[pivotIndex].color = RED;
+    arr[start].color = RED;
     for (let i = start; i < end; i++) {
         arr[i].color = RED;
-        await sleep(speedSlider.value());  
-        if (arr[i].rectHeight < pivotValue.rectHeight) {         
-            
+        await sleep(speedSlider.value());
+        if (arr[i].rectHeight < pivotValue.rectHeight) {
+
             arr[pivotIndex].color = YELLOW;
             arr[i].color = GREEN;
             await sleep(speedSlider.value());
-            arr[i].color = YELLOW;            
+            arr[i].color = YELLOW;
             await panel.swapElements(i, pivotIndex);
             pivotIndex++;
             arr[pivotIndex].color = RED;
@@ -417,13 +420,60 @@ async function partition(arr, start, end) {
     arr[end - 1].color = WHITE;
     await sleep(speedSlider.value());
     await panel.swapElements(pivotIndex, end);
-    
+
     for (let i = start; i < end; i++) {
         if (i != pivotIndex) {
             arr[i].color = WHITE;
         }
     }
 
-    arr[pivotIndex].color = WHITE; 
+    arr[pivotIndex].color = WHITE;
     return pivotIndex;
+}
+
+function runAlgorithmCountingSort() {
+    if (running) {
+        print("Already running");
+        return;
+    }
+    running = true;
+    countingSort();
+}
+
+async function countingSort() {
+    var output = Array(panel.elements.length);
+
+    var max = -1;
+    for (let i = 0; i < panel.elements.length; i++) {
+        if (panel.elements[i].rectHeight > max) {
+            max = panel.elements[i].rectHeight;
+        }
+    }
+    max = max + 1;
+    var count = Array(max);
+
+    for (let i = 0; i < max; i++) {
+        count[i] = 0;
+    }
+
+    for (let i = 0; i < panel.elements.length; i++) {
+        ++count[panel.elements[i].rectHeight];
+    }
+
+    for (let i = 1; i <= max - 1; i++) {
+        count[i] += count[i - 1];
+    }
+
+    for (let i = panel.elements.length - 1; i >= 0; i--) {
+        output[count[panel.elements[i].rectHeight] - 1] = panel.elements[i];
+        --count[panel.elements[i].rectHeight];
+    }
+
+    for (let i = 0; i < panel.elements.length; i++) {
+        panel.elements[i].color = GREEN;
+        panel.elements[i] = output[i];
+        await sleep(speedSlider.value());
+    }
+
+    running = false;
 }
