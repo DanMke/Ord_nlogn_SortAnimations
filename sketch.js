@@ -28,7 +28,7 @@ function setup() {
     resetButton.position(220, 25, 25);
     resetButton.mousePressed(resetSketch);
 
-    speedSlider = createSlider(0, 1000, 5);
+    speedSlider = createSlider(0, 1000, 200);
     speedSlider.position(300, 22);
 
     shellSortButton = createButton('Shell Sort');
